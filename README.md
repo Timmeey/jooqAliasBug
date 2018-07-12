@@ -1,0 +1,1 @@
+Just a minimal example of a jooq issue i think i discovered
