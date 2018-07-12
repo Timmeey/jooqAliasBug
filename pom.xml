@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.1.RELEASE</version>
+        <relativePath/>
+    </parent>
+
+
+    <groupId>de.timmeey</groupId>
+    <artifactId>jooqAliasBug</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <properties>
+        <db.url>jdbc:postgresql://localhost:5431/bug</db.url>
+        <db.user>postgres</db.user>
+        <db.password>example</db.password>
+        <jooq.version>3.10.8</jooq.version>
+        <kotlin.version>1.2.41</kotlin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <junit.jupiter.version>5.2.0</junit.jupiter.version>
+        <junit.platform.version>1.2.0</junit.platform.version>
+
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
+            <version>${jooq.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-codegen-maven</artifactId>
+            <version>${jooq.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>5.0.7</version>
+
+                <configuration>
+                    <url>${db.url}</url>
+                    <user>${db.user}</user>
+                    <password>${db.password}</password>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>migrate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>${jooq.version}</version>
+
+                <!-- The jOOQ code generation plugin is also executed in the generate-sources phase, prior to compilation -->
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <!-- This is a minimal working configuration. See the manual's section about the code generator for more details -->
+                <configuration>
+                    <jdbc>
+                        <url>${db.url}</url>
+                        <user>${db.user}</user>
+                        <password>${db.password}</password>
+                    </jdbc>
+                    <generator>
+                        <database>
+                            <excludes>flyway_schema_history</excludes>
+                            <inputSchema>public</inputSchema>
+                        </database>
+                        <target>
+                            <packageName>de.timmeey.jooqAliasBug.jooq
+                            </packageName>
+                            <directory>target/generated-sources/jooq</directory>
+                        </target>
+                        <!-- The naming strategy used for class and field names.
+                             You may override this with your custom naming strategy. Some examples follow
+                             Defaults to org.jooq.util.DefaultGeneratorStrategy -->
+                        <generate>
+                            <javaTimeTypes>true</javaTimeTypes>
+                            <immutablePojos>true</immutablePojos>
+                            <immutableInterfaces>true</immutableInterfaces>
+                            <records>true</records>
+                            <relations>true</relations>
+                            <indexes>true</indexes>
+                            <fluentSetters>true</fluentSetters>
+                        </generate>
+                    </generator>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+    </build>
+
+
+</project>
